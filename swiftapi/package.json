@@ -1,0 +1,14 @@
+{
+  "name": "swiftapi",
+  "version": "1.0.0",
+  "description": "Lite API tester",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "aabreu10",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^35.2.1"
+  }
+}
