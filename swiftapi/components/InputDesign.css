@@ -1,0 +1,371 @@
+.api-request-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  box-sizing: border-box;
+}
+
+.request-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.method-url-container {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.url-input-container {
+  flex: 1;
+  min-width: 200px;
+  position: relative;
+}
+
+.method-select {
+  background-color: rgb(33, 38, 45);
+  color: rgb(255, 255, 255);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 14px;
+  min-width: 100px;
+  cursor: pointer;
+  height: 38px;
+}
+
+.url-input {
+  width: 100%;
+  background-color: rgb(33, 38, 45);
+  color: rgb(255, 255, 255);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 14px;
+  height: 38px;
+  box-sizing: border-box;
+}
+
+.input-error {
+  border-color: rgb(248, 81, 73);
+}
+
+.error-message {
+  color: rgb(248, 81, 73);
+  font-size: 12px;
+  margin-top: 4px;
+  position: absolute;
+  left: 0;
+}
+
+.send-button {
+  background-color: rgb(46, 160, 67);
+  color: rgb(255, 255, 255);
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 500;
+  height: 38px;
+  min-width: 80px;
+}
+
+.send-button:hover {
+  background-color: rgb(56, 178, 80);
+}
+
+.send-button:disabled {
+  background-color: rgb(33, 38, 45);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.request-body-container {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.tabs {
+  display: flex;
+  background-color: rgb(22, 27, 34);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tab {
+  padding: 8px 16px;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  user-select: none;
+}
+
+.disabled-tab {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tab.active {
+  color: rgb(255, 255, 255);
+  border-bottom: 2px solid rgb(88, 166, 255);
+}
+
+.tab-content {
+  padding: 16px;
+  background-color: rgb(33, 38, 45);
+  position: relative;
+}
+
+.hidden {
+  display: none;
+}
+
+.headers-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.header-entry {
+  display: flex;
+  gap: 8px;
+}
+
+.header-key-input,
+.header-value-input {
+  background-color: rgb(22, 27, 34);
+  color: rgb(255, 255, 255);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+.header-key-input {
+  flex: 1;
+}
+
+.header-value-input {
+  flex: 2;
+}
+
+.remove-header-button {
+  background-color: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 8px;
+}
+
+.remove-header-button:hover {
+  color: rgb(255, 255, 255);
+}
+
+.add-header-button {
+  background-color: transparent;
+  color: rgb(88, 166, 255);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 8px;
+  margin-top: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.body-container {
+  margin-top: 16px;
+}
+
+.body-textarea {
+  width: 100%;
+  min-height: 150px;
+  background-color: rgb(22, 27, 34);
+  color: rgb(255, 255, 255);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 12px;
+  font-family: monospace;
+  font-size: 14px;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.helper-text {
+  margin-top: 8px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.format-button {
+  background-color: rgb(33, 38, 45);
+  color: rgb(88, 166, 255);
+  border: 1px solid rgba(88, 166, 255, 0.5);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.format-button:hover {
+  background-color: rgba(88, 166, 255, 0.1);
+}
+
+.format-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.response-container {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.response-title {
+  margin: 0;
+  padding: 12px 16px;
+  background-color: rgb(22, 27, 34);
+  color: rgb(255, 255, 255);
+  font-size: 16px;
+  font-weight: 500;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.response-content {
+  background-color: rgb(33, 38, 45);
+  padding: 16px;
+  min-height: 150px;
+  max-height: 300px;
+  overflow: auto;
+}
+
+.response-json {
+  margin: 0;
+  color: rgb(255, 255, 255);
+  font-family: monospace;
+  font-size: 14px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.no-response {
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+}
+
+.docs-container {
+  color: rgb(255, 255, 255);
+}
+
+.docs-section {
+  margin-bottom: 16px;
+}
+
+.docs-section h4 {
+  margin: 12px 0 8px;
+  color: rgb(88, 166, 255);
+}
+
+.docs-section ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.docs-section li {
+  margin-bottom: 4px;
+}
+
+/* For dark scrollbars in webkit browsers */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(22, 27, 34);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .api-request-container {
+    padding: 12px;
+  }
+
+  .method-url-container {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .method-select {
+    width: 100%;
+  }
+
+  .url-input-container {
+    width: 100%;
+  }
+
+  .send-button {
+    width: 100%;
+  }
+
+  .header-entry {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .header-key-input,
+  .header-value-input {
+    width: 100%;
+  }
+
+  .remove-header-button {
+    align-self: flex-end;
+  }
+
+  .response-content {
+    max-height: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tabs {
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .tab {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .tab-content {
+    padding: 12px;
+  }
+}
