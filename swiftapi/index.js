@@ -1,5 +1,4 @@
-const { app, BrowserWindow } = require('electron');
-const path = require('path');
+const { app, BrowserWindow, dialog } = require('electron');
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -16,9 +15,38 @@ function createWindow() {
   });
 
   win.loadFile('index.html');
+  return win;
 }
 
-app.whenReady().then(createWindow);
+// When the app is ready, create window and check for updates
+app.whenReady().then(() => {
+  const mainWindow = createWindow();
+  
+  // Check for updates
+  autoUpdater.checkForUpdatesAndNotify();
+  
+  // Update event handlers
+  autoUpdater.on('update-available', () => {
+    dialog.showMessageBox({
+      type: 'info',
+      title: 'Update Available',
+      message: 'A new version of SwiftAPI is available. Downloading now...',
+      buttons: ['OK']
+    });
+  });
+  
+  autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
+    dialog.showMessageBox({
+      type: 'info',
+      buttons: ['Restart', 'Later'],
+      title: 'Application Update',
+      message: 'A new version has been downloaded. Restart the application to apply the updates.',
+      detail: releaseName
+    }).then((returnValue) => {
+      if (returnValue.response === 0) autoUpdater.quitAndInstall();
+    });
+  });
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();

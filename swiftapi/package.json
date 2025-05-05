@@ -1,21 +1,31 @@
 {
   "name": "swiftapi",
   "version": "1.0.0",
-  "description": "A simple API testing tool",
+  "description": "A lite API tester",
   "main": "index.js",
+  "repository": "https://github.com/aabreu10/swiftapi.git",
   "scripts": {
-    "start": "electron .",
-    "build": "electron-builder"
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
   },
-  "author": "",
+  "author": "aabreu10",
   "license": "ISC",
-  "dependencies": {
-    "electron": "^25.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
-  },
   "devDependencies": {
-    "electron-builder": "^24.0.0"
+    "@electron-forge/cli": "^7.8.0",
+    "@electron-forge/maker-deb": "^7.8.0",
+    "@electron-forge/maker-rpm": "^7.8.0",
+    "@electron-forge/maker-squirrel": "^7.8.0",
+    "@electron-forge/maker-zip": "^7.8.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.8.0",
+    "@electron-forge/plugin-fuses": "^7.8.0",
+    "@electron/fuses": "^1.8.0",
+    "electron": "36.1.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.1"
   }
 }
-  
