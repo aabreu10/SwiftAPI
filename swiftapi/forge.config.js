@@ -1,3 +1,5 @@
+console.log("Using forge.config.js");
+
 const { FusesPlugin } = require('@electron-forge/plugin-fuses');
 const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 
@@ -6,6 +8,19 @@ module.exports = {
     asar: true,
   },
   rebuildConfig: {},
+  publishers: [
+    {
+      name: '@electron-forge/publisher-github',
+      config: {
+        repository: {
+          owner: 'aabreu10',
+          name: 'SwiftAPI',
+        },
+        prerelease: false,
+        draft: false
+      }
+    }
+  ],
   makers: [
     {
       name: '@electron-forge/maker-squirrel',

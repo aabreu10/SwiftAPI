@@ -1,10 +1,6 @@
-<<<<<<< HEAD
 const { app, BrowserWindow, dialog } = require('electron');
-=======
-require('update-electron-app')();
-const { app, BrowserWindow } = require('electron');
+const { autoUpdater } = require('electron-updater');
 const path = require('path');
->>>>>>> 333c720a0a952e4ddc89a81b4a8f63f0422db710
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -14,6 +10,7 @@ function createWindow() {
     minHeight: 600,
     backgroundColor: '#1e1e1e', 
     webPreferences: {
+      preload: path.join(__dirname, 'preload.js'), // Use preload script for security
       nodeIntegration: true,
       contextIsolation: false, 
     },
