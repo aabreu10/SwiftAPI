@@ -8,13 +8,14 @@ function createWindow() {
     height: 700,
     minWidth: 800,
     minHeight: 600,
+    title: "SwiftAPI", 
+    icon: path.join(__dirname, 'assets', 'swiftapilogo.png'), // See below for icon
     backgroundColor: '#1e1e1e', 
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'), // Use preload script for security
       nodeIntegration: true,
       contextIsolation: false, 
     },
-    title: "SwiftAPI", 
   });
 
   win.loadFile('index.html');

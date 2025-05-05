@@ -5,6 +5,7 @@ const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 
 module.exports = {
   packagerConfig: {
+    icon: path.join(__dirname, 'assets', 'swiftapilogo'), 
     asar: true,
   },
   rebuildConfig: {},
