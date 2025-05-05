@@ -1,0 +1,14 @@
+{
+  "name": "swiftapi",
+  "version": "1.0.0",
+  "description": "A lightweight, user-friendly API testing tool built with Electron and React.",
+  "main": "index.js",
+  "scripts": {
+    "start": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^36.1.0"
+  }
+}
