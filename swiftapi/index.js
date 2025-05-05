@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 const { app, BrowserWindow, dialog } = require('electron');
+=======
+require('update-electron-app')();
+const { app, BrowserWindow } = require('electron');
+const path = require('path');
+>>>>>>> 333c720a0a952e4ddc89a81b4a8f63f0422db710
 
 function createWindow() {
   const win = new BrowserWindow({
