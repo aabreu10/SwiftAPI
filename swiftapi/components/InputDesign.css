@@ -293,7 +293,6 @@
   margin-bottom: 4px;
 }
 
-/* For dark scrollbars in webkit browsers */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -312,7 +311,6 @@
   background: rgba(255, 255, 255, 0.3);
 }
 
-/* Responsive styles */
 @media (max-width: 768px) {
   .api-request-container {
     padding: 12px;

@@ -1,0 +1,2113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SwiftAPI</title>
+    <style>
+      /* Base styles */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background-color: rgb(13, 17, 23);
+        color: rgb(255, 255, 255);
+        font-family:
+          "Ubuntu", sans-serif,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Helvetica,
+          Arial,
+          sans-serif;
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      /* App layout */
+      .app-container {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        height: 100vh;
+      }
+
+      /* Sidebar styles */
+      .sidebar {
+        background-color: rgb(22, 27, 34);
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow-y: auto;
+      }
+
+      .sidebar-header {
+        margin-bottom: 16px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .sidebar-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: rgb(255, 255, 255);
+        margin-bottom: 8px;
+      }
+
+      /* Custom button from Uiverse.io by abrahamcalsin */
+      .create-folder-button {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 5px;
+        background: #183153;
+        font-family: "Montserrat", sans-serif;
+        box-shadow: 0px 6px 24px 0px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+        cursor: pointer;
+        border: none;
+        width: 100%;
+      }
+
+      .create-folder-button:after {
+        content: " ";
+        width: 0%;
+        height: 100%;
+        background: greenyellow;
+        position: absolute;
+        transition: all 0.4s ease-in-out;
+        right: 0;
+      }
+
+      .create-folder-button:hover::after {
+        right: auto;
+        left: 0;
+        width: 100%;
+      }
+
+      .create-folder-button span {
+        text-align: center;
+        text-decoration: none;
+        width: 100%;
+        padding: 12px 16px;
+        color: #fff;
+        font-size: 0.875em;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        z-index: 20;
+        transition: all 0.3s ease-in-out;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .create-folder-button:hover span {
+        color: #183153;
+        animation: scaleUp 0.3s ease-in-out;
+      }
+
+      @keyframes scaleUp {
+        0% {
+          transform: scale(1);
+        }
+
+        50% {
+          transform: scale(0.95);
+        }
+
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .folders-list {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        overflow-y: auto;
+      }
+
+      .folder-item {
+        background-color: rgb(33, 38, 45);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        overflow: hidden;
+        transition: background-color 0.2s;
+      }
+
+      .folder-header {
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .folder-header:hover {
+        background-color: rgb(48, 54, 61);
+      }
+
+      .folder-name-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .folder-name {
+        font-weight: 600;
+        font-size: 14px;
+        color: rgb(255, 255, 255);
+      }
+
+      .folder-icon {
+        transition: transform 0.2s;
+      }
+
+      .folder-icon.open {
+        transform: rotate(90deg);
+      }
+
+      .folder-actions {
+        display: flex;
+        gap: 4px;
+      }
+
+      .add-request-button {
+        background-color: transparent;
+        border: none;
+        color: rgb(139, 148, 158);
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .add-request-button:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: rgb(255, 255, 255);
+      }
+
+      .folder-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+      }
+
+      .folder-content.open {
+        max-height: 1000px;
+      }
+
+      .request-list {
+        padding: 0 8px 8px 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .request-item {
+        padding: 8px;
+        border-radius: 4px;
+        background-color: rgb(22, 27, 34);
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+
+      .request-item:hover {
+        background-color: rgb(48, 54, 61);
+      }
+
+      .request-item.active {
+        background-color: rgba(56, 139, 253, 0.15);
+        border: 1px solid rgb(56, 139, 253);
+      }
+
+      .request-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 4px;
+      }
+
+      .request-name {
+        font-weight: 500;
+        font-size: 13px;
+        color: rgb(255, 255, 255);
+      }
+
+      .request-method {
+        font-size: 11px;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-weight: 600;
+      }
+
+.request-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.request-item:hover .request-actions {
+  opacity: 1;
+}
+
+.delete-request-button {
+  background-color: transparent;
+  border: none;
+  color: rgb(139, 148, 158);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Add this to make the entire button area clickable */
+.delete-request-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
+/* Make sure the SVG appears above the ::before overlay */
+.delete-request-button svg {
+  position: relative;
+  z-index: 2;
+}
+
+      .method-get {
+        background-color: rgba(56, 139, 253, 0.15);
+        color: rgb(56, 139, 253);
+      }
+
+      .method-post {
+        background-color: rgba(46, 160, 67, 0.15);
+        color: rgb(46, 160, 67);
+      }
+
+      .method-put {
+        background-color: rgba(210, 153, 34, 0.15);
+        color: rgb(210, 153, 34);
+      }
+
+      .method-delete {
+        background-color: rgba(218, 54, 51, 0.15);
+        color: rgb(218, 54, 51);
+      }
+
+      .request-url {
+        font-size: 11px;
+        color: rgb(139, 148, 158);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .empty-folder-message {
+        padding: 8px;
+        text-align: center;
+        color: rgb(139, 148, 158);
+        font-size: 12px;
+        font-style: italic;
+      }
+
+      /* Main content area */
+      .main-content {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .content-wrapper {
+        padding: 24px;
+        height: 100%;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      /* Request panel */
+      .request-panel {
+        background-color: rgba(255, 255, 255, 0.06);
+        border-radius: 12px;
+        padding: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+
+      .panel-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: rgb(255, 255, 255);
+      }
+
+      .save-request-button {
+        padding: 6px 12px;
+        background-color: rgb(33, 38, 45);
+        color: rgb(139, 148, 158);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .save-request-button:hover {
+        background-color: rgb(48, 54, 61);
+        color: rgb(255, 255, 255);
+      }
+
+      .save-request-button svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      .url-container {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+
+      /* Custom dropdown styles */
+      .method-dropdown {
+        position: relative;
+        min-width: 80px;
+        user-select: none;
+      }
+
+      .method-select-button {
+        background-color: rgb(33, 38, 45);
+        color: rgb(255, 255, 255);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        padding: 8px 12px;
+        font-size: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        width: 100%;
+      }
+
+      .dropdown-arrow {
+        width: 0;
+        height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 5px solid #8b949e;
+        transition: transform 0.3s ease;
+      }
+
+      .dropdown-arrow.open {
+        transform: rotate(180deg);
+      }
+
+      .dropdown-options {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        width: 100%;
+        background-color: rgb(33, 38, 45);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        z-index: 10;
+        overflow: hidden;
+
+        /* Animation properties */
+        transform-origin: top center;
+        opacity: 0;
+        transform: scaleY(0.7);
+        max-height: 0;
+        transition:
+          opacity 0.3s ease,
+          transform 0.3s ease,
+          max-height 0.3s ease;
+      }
+
+      .dropdown-options.open {
+        opacity: 1;
+        transform: scaleY(1);
+        max-height: 200px;
+      }
+
+      .dropdown-option {
+        padding: 8px 12px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+
+      .dropdown-option:hover {
+        background-color: rgb(48, 54, 61);
+      }
+
+      .dropdown-option.selected {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      /* Original styles continued */
+      .method-select {
+        display: none; /* Hide the original select */
+      }
+
+      .url-input {
+        flex: 1;
+        background-color: rgb(33, 38, 45);
+        color: rgb(255, 255, 255);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        padding: 8px 12px;
+        font-size: 14px;
+      }
+
+      /* Headers section */
+      .headers-section {
+        margin-bottom: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .headers-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .section-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: rgb(139, 148, 158);
+        margin: 0;
+      }
+
+      .preset-buttons {
+        display: flex;
+        gap: 8px;
+      }
+
+      .preset-button {
+        padding: 4px 8px;
+        font-size: 12px;
+        background-color: rgb(33, 38, 45);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        color: rgb(139, 148, 158);
+        cursor: pointer;
+      }
+
+      .json-button:hover,
+      .auth-button:hover {
+        background-color: rgb(48, 54, 61);
+      }
+
+      .headers-container {
+        background-color: rgb(33, 38, 45);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .header-items {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .header-item {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .header-checkbox {
+        accent-color: rgb(35, 134, 54);
+      }
+
+      .header-name-input,
+      .header-value-input {
+        flex: 1;
+        background-color: rgb(22, 27, 34);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        padding: 6px 8px;
+        color: rgb(255, 255, 255);
+        font-size: 13px;
+      }
+
+      .remove-header-button {
+        padding: 4px 8px;
+        background-color: transparent;
+        border: none;
+        color: rgb(139, 148, 158);
+        cursor: pointer;
+      }
+
+      .remove-header-button:hover {
+        color: rgb(255, 255, 255);
+      }
+
+      .add-header-button {
+        padding: 8px;
+        background-color: rgb(22, 27, 34);
+        border: 1px dashed rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        color: rgb(139, 148, 158);
+        cursor: pointer;
+      }
+
+      .add-header-button:hover {
+        background-color: rgb(48, 54, 61);
+        border-style: solid;
+      }
+
+      .body-section {
+        margin-bottom: 24px;
+      }
+
+      .body-textarea {
+        width: 100%;
+        height: 150px;
+        background-color: rgb(33, 38, 45);
+        color: rgb(255, 255, 255);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        padding: 12px;
+        font-size: 14px;
+        font-family: monospace;
+        box-sizing: border-box;
+        margin-top: 8px;
+        resize: vertical;
+      }
+
+      .animated-button {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 10px 30px;
+        border: 4px solid;
+        border-color: transparent;
+        font-size: 14px;
+        background-color: inherit;
+        border-radius: 100px;
+        font-weight: 600;
+        color: greenyellow;
+        box-shadow: 0 0 0 2px greenyellow;
+        cursor: pointer;
+        overflow: hidden;
+        transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+
+      .animated-button svg {
+        position: absolute;
+        width: 24px;
+        fill: greenyellow;
+        z-index: 9;
+        transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+
+      .animated-button .arr-1 {
+        right: 16px;
+      }
+
+      .animated-button .arr-2 {
+        left: -25%;
+      }
+
+      .animated-button .circle {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 20px;
+        height: 20px;
+        background-color: greenyellow;
+        border-radius: 50%;
+        opacity: 0;
+        transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+
+      .animated-button .text {
+        position: relative;
+        z-index: 1;
+        transform: translateX(-12px);
+        transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+
+      .animated-button:hover {
+        box-shadow: 0 0 0 12px transparent;
+        color: #212121;
+        border-radius: 12px;
+      }
+
+      .animated-button:hover .arr-1 {
+        right: -25%;
+      }
+
+      .animated-button:hover .arr-2 {
+        left: 16px;
+      }
+
+      .animated-button:hover .text {
+        transform: translateX(12px);
+      }
+
+      .animated-button:hover svg {
+        fill: #212121;
+      }
+
+      .animated-button:active {
+        scale: 0.95;
+        box-shadow: 0 0 0 4px greenyellow;
+      }
+
+      .animated-button:hover .circle {
+        width: 220px;
+        height: 220px;
+        opacity: 1;
+      }
+
+      .response-panel {
+        background-color: rgba(255, 255, 255, 0.06);
+        border-radius: 12px;
+        padding: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .response-display {
+        background-color: rgb(33, 38, 45);
+        color: rgb(255, 255, 255);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        padding: 12px;
+        font-size: 14px;
+        font-family: monospace;
+        overflow: auto;
+        flex: 1;
+        margin: 0;
+        min-height: 200px;
+        position: relative;
+      }
+
+      .view-more-container {
+        text-align: center;
+        padding: 10px 0;
+        position: sticky;
+        bottom: 0;
+        background-color: rgba(33, 38, 45, 0.9);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(4px);
+        margin: 0 -12px -12px -12px;
+        border-radius: 0 0 6px 6px;
+      }
+
+      .view-more-button {
+        background-color: rgb(48, 54, 61);
+        color: rgb(255, 255, 255);
+        border: none;
+        border-radius: 4px;
+        padding: 6px 12px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .view-more-button:hover {
+        background-color: rgb(56, 139, 253);
+      }
+
+      .view-more-button svg {
+        width: 14px;
+        height: 14px;
+        transition: transform 0.2s;
+      }
+
+      .view-more-button.expanded svg {
+        transform: rotate(180deg);
+      }
+
+      /* Modal styles */
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition:
+          opacity 0.3s,
+          visibility 0.3s;
+      }
+
+      .modal-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .modal {
+        background-color: rgb(22, 27, 34);
+        border-radius: 12px;
+        padding: 24px;
+        width: 400px;
+        max-width: 90%;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        transform: translateY(-20px);
+        transition: transform 0.3s;
+      }
+
+      .modal-overlay.active .modal {
+        transform: translateY(0);
+      }
+
+      .modal-header {
+        margin-bottom: 16px;
+      }
+
+      .modal-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: rgb(255, 255, 255);
+      }
+
+      .modal-body {
+        margin-bottom: 24px;
+      }
+
+      .form-group {
+        margin-bottom: 16px;
+      }
+
+      .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: rgb(139, 148, 158);
+      }
+
+      .form-input {
+        width: 100%;
+        padding: 8px 12px;
+        background-color: rgb(33, 38, 45);
+        color: rgb(255, 255, 255);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        font-size: 14px;
+      }
+
+      .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+      }
+
+      .modal-button {
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+
+      .cancel-button {
+        background-color: transparent;
+        color: rgb(139, 148, 158);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .cancel-button:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+
+      .save-button {
+        background-color: rgb(35, 134, 54);
+        color: white;
+        border: none;
+      }
+
+      .save-button:hover {
+        background-color: rgb(46, 160, 67);
+      }
+
+      /* Utility classes */
+      .hidden {
+      .hidden {
+        display: none;
+      }
+
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          display: none;
+        }
+
+        .sidebar.active {
+          display: block;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 250px;
+          height: 100vh;
+          z-index: 100;
+        }
+
+        .toggle-sidebar {
+          display: block;
+          position: fixed;
+          bottom: 24px;
+          right: 24px;
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          background-color: rgb(35, 134, 54);
+          color: white;
+          border: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          z-index: 101;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <h2 class="sidebar-title">Request Collections</h2>
+          <button class="create-folder-button" id="create-folder-button">
+            <span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
+                ></path>
+              </svg>
+              NEW FOLDER
+            </span>
+          </button>
+        </div>
+        <div class="folders-list" id="folders-list">
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <div class="content-wrapper">
+          <section class="request-panel">
+            <div class="panel-header">
+              <h2 class="panel-title">Request</h2>
+              <button class="save-request-button" id="save-request-button">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+                  ></path>
+                  <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                  <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+                Save Request
+              </button>
+            </div>
+            <form class="request-form">
+              <div class="url-container">
+                <div class="method-dropdown">
+                  <button type="button" class="method-select-button">
+                    <span class="selected-method">GET</span>
+                    <span class="dropdown-arrow"></span>
+                  </button>
+                  <div class="dropdown-options">
+                    <div class="dropdown-option selected" data-value="GET">
+                      GET
+                    </div>
+                    <div class="dropdown-option" data-value="POST">POST</div>
+                    <div class="dropdown-option" data-value="PUT">PUT</div>
+                    <div class="dropdown-option" data-value="DELETE">
+                      DELETE
+                    </div>
+                  </div>
+                  <!-- Keep the original select for form submission, but hide it -->
+                  < <option>GET</option>
+                    <option>POST</option>
+                    <option>PUT</option>
+                    <option>DELETE</option>
+                  </select>
+                </div>
+                <input
+                  type="text"
+                  placeholder="Enter request URL"
+                  class="url-input"
+                />
+              </div>
+
+              <section class="headers-section">
+                <div class="headers-top">
+                  <h3 class="section-title">Headers</h3>
+                  <div class="preset-buttons">
+                    <button type="button" class="preset-button json-button">
+                      + JSON
+                    </button>
+                    <button type="button" class="preset-button auth-button">
+                      + Auth
+                    </button>
+                  </div>
+                </div>
+
+                <div class="headers-container">
+                  <div class="header-items">
+                    <!-- Header items will be dynamically added here -->
+                  <button type="button" class="add-header-button">
+                    + Add header
+                  </button>
+                </div>
+              </section>
+
+              <section class="body-section">
+                <h3 class="section-title">Body</h3>
+                <textarea class="body-textarea"></textarea>
+              </section>
+
+              <button class="animated-button">
+                <svg
+                  viewBox="0 0 24 24"
+                  class="arr-2"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+                  ></path>
+                </svg>
+                <span class="text">Send request</span>
+                <span class="circle"></span>
+                <svg
+                  viewBox="0 0 24 24"
+                  class="arr-1"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+                  ></path>
+                </svg>
+              </button>
+            </form>
+          </section>
+
+          <!-- Response Panel -->
+          <section class="response-panel">
+            <pre class="response-display">
+              <span class="response-content hidden"></span>
+              <span class="no-response">No response yet</span>
+              <div class="view-more-container hidden" id="view-more-container">
+                <button class="view-more-button" id="view-more-button">
+                  View more
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+              </div>
+            </pre>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <!-- Mobile sidebar toggle -->
+    <button class="toggle-sidebar hidden" id="toggle-sidebar">
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+
+    <!-- Create Folder Modal -->
+    <div class="modal-overlay" id="create-folder-modal">
+        <div class="modal-header">
+          <h3 class="modal-title">Create New Folder</h3>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="folder-name" class="form-label">Folder Name</label>
+            <input
+              type="text"
+              id="folder-name"
+              class="form-input"
+              placeholder="Enter a name for this folder"
+            />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="modal-button cancel-button"
+            id="cancel-folder"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="modal-button save-button"
+            id="confirm-folder"
+          >
+            Create Folder
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Save Request Modal -->
+    <div class="modal-overlay" id="save-request-modal">
+        <div class="modal-header">
+          <h3 class="modal-title">Save Request</h3>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="request-name" class="form-label">Request Name</label>
+            <input
+              type="text"
+              id="request-name"
+              class="form-input"
+              placeholder="Enter a name for this request"
+            />
+          </div>
+          <div class="form-group">
+            <label for="folder-select" class="form-label">Select Folder</label>
+            <select id="folder-select" class="form-input">
+              <!-- Folders will be dynamically added here -->
+            </select>
+          </div>
+        </di class="modal-footer">
+          <button
+            type="button"
+            class="modal-button cancel-button"
+            id="cancel-request"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="modal-button save-button"
+            id="confirm-request"
+          >
+            Save Request
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Header item template -->
+    <template id="header-item-template">
+      <div class="header-item">
+        <input type="text" placeholder="Header" class="header-name-input" />
+        <input type="text" placeholder="Value" class="header-value-input" />
+        <button type="button" class="remove-header-button">×</button>
+      </div>
+    </template>
+
+    <!-- Folder template -->
+    <template id="folder-template">
+      <div class="folder-item">
+          <div class="folder-name-container">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="folder-icon"
+            >
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <span class="folder-name"></span>
+          </div>
+          <div class="folder-actions">
+            <button
+              class="add-request-button"
+              title="Add request to this folder"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="folder-content">
+          <div class="request-list">
+            <!-- Requests will be dynamically added here -->
+          </div>
+        </div>
+      </div>
+    </temp
+    <!-- Request template -->
+    <!-- Update the request template to add delete button -->
+<template id="request-template">
+  <div class="request-item">
+      <div class="request-actions">
+        <button class="delete-request-button" title="Delete this request">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+        </button>
+      </div>
+      <span class="request-method"></span>
+    </div>
+    <div class="request-url"></div>
+  </div>
+</template>
+
+    <script>
+      (() => {
+        // State management
+        const state = {
+          method: "GET",
+          url: "",
+          headers: [],
+          body: "",
+          headerPresets: {
+            json: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            form: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            auth: {
+              Authorization: "Bearer ",
+            },
+          },
+          response: null,
+          fullResponse: null,
+          isLoading: false,
+          dropdownOpen: false,
+          folders: [],
+          activeFolder: null,
+          activeRequest: null,
+          responseChunkSize: 1000,
+          currentChunk: 1,
+          currentRequestId: null,
+        };
+
+        // DOM Elements
+        const elements = {
+          methodSelect: document.querySelector(".method-select"),
+          methodDropdown: document.querySelector(".method-dropdown"),
+          methodButton: document.querySelector(".method-select-button"),
+          selectedMethod: document.querySelector(".selected-method"),
+          dropdownOptions: document.querySelector(".dropdown-options"),
+          dropdownArrow: document.querySelector(".dropdown-arrow"),
+          urlInput: document.querySelector(".url-input"),
+          jsonButton: document.querySelector(".json-button"),
+          authButton: document.querySelector(".auth-button"),
+          headerItems: document.querySelector(".header-items"),
+          addHeaderButton: document.querySelector(".add-header-button"),
+          bodyTextarea: document.querySelector(".body-textarea"),
+          sendButton: document.querySelector(".animated-button"),
+          responseContent: document.querySelector(".response-content"),
+          noResponse: document.querySelector(".no-response"),
+          viewMoreContainer: document.getElementById("view-more-container"),
+          viewMoreButton: document.getElementById("view-more-button"),
+          headerItemTemplate: document.getElementById("header-item-template"),
+          folderTemplate: document.getElementById("folder-template"),
+          requestTemplate: document.getElementById("request-template"),
+          foldersList: document.getElementById("folders-list"),
+          createFolderButton: document.getElementById("create-folder-button"),
+          saveRequestButton: document.getElementById("save-request-button"),
+          createFolderModal: document.getElementById("create-folder-modal"),
+          saveRequestModal: document.getElementById("save-request-modal"),
+          folderNameInput: document.getElementById("folder-name"),
+          requestNameInput: document.getElementById("request-name"),
+          folderSelect: document.getElementById("folder-select"),
+          cancelFolderButton: document.getElementById("cancel-folder"),
+          confirmFolderButton: document.getElementById("confirm-folder"),
+          cancelRequestButton: document.getElementById("cancel-request"),
+          confirmRequestButton: document.getElementById("confirm-request"),
+          toggleSidebarButton: document.getElementById("toggle-sidebar"),
+          sidebar: document.querySelector(".sidebar"),
+        };
+
+        function checkMobile() {
+          if (window.innerWidth <= 768) {
+            elements.toggleSidebarButton.classList.remove("hidden");
+          } else {
+            elements.toggleSidebarButton.classList.add("hidden");
+            elements.sidebar.classList.remove("active");
+          }
+        }
+
+        function toggleSidebar() {
+          elements.sidebar.classList.toggle("active");
+        }
+
+        function loadFolders() {
+          const savedFolders = localStorage.getItem("requestFolders");
+          if (savedFolders) {
+            state.folders = JSON.parse(savedFolders);
+            renderFolders();
+          }
+        }
+
+        function saveFolders() {
+          localStorage.setItem("requestFolders", JSON.stringify(state.folders));
+        }
+
+function renderFolders() {
+  elements.foldersList.innerHTML = "";
+
+  if (state.folders.length === 0) {
+    const emptyMessage = document.createElement("div");
+    emptyMessage.textContent = "No folders yet";
+    emptyMessage.style.color = "rgb(139, 148, 158)";
+    emptyMessage.style.textAlign = "center";
+    emptyMessage.style.padding = "16px 0";
+    elements.foldersList.appendChild(emptyMessage);
+    return;
+  }
+
+  state.folders.forEach((folder, folderIndex) => {
+    const folderItem = elements.folderTemplate.content.cloneNode(true);
+    const folderElement = folderItem.querySelector(".folder-item");
+    const folderHeader = folderItem.querySelector(".folder-header");
+    const folderContent = folderItem.querySelector(".folder-content");
+    const folderIcon = folderItem.querySelector(".folder-icon");
+    const folderName = folderItem.querySelector(".folder-name");
+    const addRequestButton = folderItem.querySelector(
+      ".add-request-button",
+    );
+    const requestList = folderItem.querySelector(".request-list");
+
+    folderName.textContent = folder.name;
+
+    folderHeader.addEventListener("click", (e) => {
+      if (e.target.closest(".add-request-button")) return;
+
+      const isOpen = folderContent.classList.contains("open");
+      if (isOpen) {
+        folderContent.classList.remove("open");
+        folderIcon.classList.remove("open");
+      } else {
+        folderContent.classList.add("open");
+        folderIcon.classList.add("open");
+      }
+    });
+
+    addRequestButton.addEventListener("click", () => {
+      state.activeFolder = folderIndex;
+      state.activeRequest = null;
+      state.currentRequestId = null;
+      
+      showSaveRequestModal(true);
+    });
+
+    if (folder.requests.length === 0) {
+      const emptyMessage = document.createElement("div");
+      emptyMessage.textContent = "No requests in this folder";
+      emptyMessage.className = "empty-folder-message";
+      requestList.appendChild(emptyMessage);
+    } else {
+      folder.requests.forEach((request, requestIndex) => {
+        const requestItem = elements.requestTemplate.content.cloneNode(true);
+        const requestElement = requestItem.querySelector(".request-item");
+        const requestName = requestItem.querySelector(".request-name");
+        const requestMethod = requestItem.querySelector(".request-method");
+        const requestUrl = requestItem.querySelector(".request-url");
+        const deleteButton = requestItem.querySelector(".delete-request-button"); // Explicitly define deleteButton
+
+        requestName.textContent = request.name;
+        requestMethod.textContent = request.method;
+        requestMethod.classList.add(
+
+        requestName.textContent = request.name;
+        requestMethod.textContent = request.method;
+        requestMethod.classList.add(
+          `method-${request.method.toLowerCase()}`,
+        );
+        requestUrl.textContent = request.url;
+
+        if (
+          state.activeFolder === folderIndex &&
+          state.activeRequest === requestIndex
+        ) {
+          requestElement.classList.add("active");
+          folderContent.classList.add("open");
+          folderIcon.classList.add("open");
+        }
+
+        requestElement.addEventListener("click", (e) => {
+          if (e.target.closest('.delete-request-button')) return;
+          loadRequest(folderIndex, requestIndex);
+        });
+
+        deleteButton.addEventListener("click", (e) => {
+          e.stopPropagation();
+          deleteRequest(folderIndex, requestIndex, request.name);
+        });
+
+            deleteRequest(folderIndex, requestIndex, request.name);
+          });
+        }
+
+        requestList.appendChild(requestItem);
+      });
+    }
+
+    elements.foldersList.appendChild(folderItem);
+  });
+
+  // Update folder select in save request modal
+  updateFolderSelect();
+}
+
+// Create a new folder
+fuupdateFolderSelect();
+}
+
+function createFolder() {
+  const folderName = elements.folderNameInput.value.trim();
+
+  if (!folderName) {
+    alert("Please enter a name for this folder");
+    return;
+  }
+
+  const newFolder = {
+    id: Date.now(),
+    name: folderName,
+    requests: [],
+  };
+
+  state.folders.push(newFolder);
+  state.activeFolder = state.folders.length - 1;
+
+  saveFolders();
+  renderFolders();
+  hideCreateFolderModal();
+}
+
+        function updateFolderSelect() {
+          elements.folderSelect.innerHTML = "";
+
+          state.folders.forEach((folder, index) => {
+            const option = document.createElement("option");
+            option.value = index;
+            option.textContent = folder.name;
+            elements.folderSelect.appendChild(option);
+          });
+
+          if (state.activeFolder !== null) {
+            elements.folderSelect.value = state.activeFolder;
+          }
+        }
+
+        function loadRequest(folderIndex, requestIndex) {
+          const request = state.folders[folderIndex].requests[requestIndex];
+
+          state.activeFolder = folderIndex;
+          state.activeRequest = requestIndex;
+          state.currentRequestId = request.id;
+          state.method = request.method;
+          state.url = request.url;
+          state.headers = [...request.headers];
+          state.body = request.body;
+
+          elements.selectedMethod.textContent = request.method;
+          elements.methodSelect.value = request.method;
+          elements.urlInput.value = request.url;
+          elements.bodyTextarea.value = request.body;
+
+          document.querySelectorAll(".dropdown-option").forEach((option) => {
+            if (option.getAttribute("data-value") === request.method) {
+              option.classList.add("selected");
+            } else {
+              option.classList.remove("selected");
+            }
+          });
+
+          renderHeaders();
+          renderFolders();
+        }
+
+        function showCreateFolderModal() {
+          elements.folderNameInput.value = "";
+          elements.createFolderModal.classList.add("active");
+        }
+
+        function hideCreateFolderModal() {
+          elements.createFolderModal.classList.remove("active");
+        }
+
+        function generateRequestName() {
+          let name = "";
+          try {
+            const urlObj = new URL(state.url);
+            const pathParts = urlObj.pathname.split("/").filter(Boolean);
+            if (pathParts.length > 0) {
+              name = pathParts[pathParts.length - 1];
+            } else {
+              name = urlObj.hostname;
+            }
+          } catch (e) {
+            name = "request";
+          }
+
+          return `${state.method} ${name}`;
+        }
+
+        function saveRequestDirectly() {
+  if (state.folders.length === 0) {
+    showCreateFolderModal();
+    return;
+  }
+
+  let folderIndex = state.activeFolder;
+  if (
+    folderIndex === null ||
+    folderIndex < 0 ||
+    folderIndex >= state.folders.length
+  ) {
+    folderIndex = 0;
+  }
+
+  let requestName;
+
+  if (state.currentRequestId && state.activeRequest !== null && state.activeFolder !== null) {
+    requestName = state.folders[state.activeFolder].requests[state.activeRequest].name;
+  } else {
+    requestName = generateRequestName();
+  }
+
+  const newRequest = {
+    id: state.currentRequestId || Date.now(),
+    name: requestName,
+    method: state.method,
+    url: state.url,
+    headers: [...state.headers],
+    body: state.body,
+  };
+
+  if (state.currentRequestId) {
+    if (state.activeFolder !== null && state.activeRequest !== null) {
+      state.folders[state.activeFolder].requests[state.activeRequest] = newRequest;
+      saveFolders();
+      renderFolders();
+      return;
+    }
+    
+    for (let i = 0; i < state.folders.length; i++) {
+      const requestIndex = state.folders[i].requests.findIndex(
+        (req) => req.id === state.currentRequestId
+      );
+      
+      if (requestIndex !== -1) {
+        state.folders[i].requests[requestIndex] = newRequest;
+        state.activeFolder = i;
+        state.activeRequest = requestIndex;
+        
+        saveFolders();
+        renderFolders();
+        return;
+      }
+    }
+  }
+  
+  state.folders[folderIndex].requests.push(newRequest);
+  state.activeRequest = state.folders[folderIndex].requests.length - 1;
+  state.activeFolder = folderIndex;
+  state.currentRequestId = newRequest.id;
+quest modal (kept for compatibility)
+        function showSaveRequestModal(isNewRequest) {
+  // Determine which folder to use
+  let folderIndex = state.activeFolder;
+  if (
+    folderIndex === null ||
+    folderIndex < 0 ||
+    folderIndex >= state.folders.length
+  ) {
+    folderIndex = 0; // Use first folder if no active folder
+  }
+  
+  // Update folder select
+  updateFolderSelect();
+  elements.folderSelect.value = folderIndex;
+  
+  // Generate a suggested name for the request
+  const suggestedName = generateRequestName();
+  elements.requestNameInput.value = isNewRequest ? "" : suggestedName;
+  elements.requestNameInput.placeholder = suggestedName;
+  
+  // Show the modal
+  elements.saveRequestModal.classList.add("active");
+}
+
+        // Hide save request modal (kept for compatibility)
+        function hideSaveRequestModal() {
+          elements.saveRequestModal.classList.remove("active");
+        }
+
+        // Add this function to delete requests
+// Add this function to delete requests
+function deleteRequest(folderIndex, requestIndex, requestName) {
+  // Show confirmation dialog
+  if (confirm(`Are you sure you want to delete the request "${requestName}"?`)) {
+    // If user confirms, delete the request
+    state.folders[folderIndex].requests.splice(requestIndex, 1);
+    
+    // Reset active request if the deleted one was active
+    if (state.activeFolder === folderIndex && state.activeRequest === requestIndex) {
+      state.activeRequest = null;
+      state.currentRequestId = null;
+      
+      // Clear the form
+      elements.urlInput.value = "";
+      elements.bodyTextarea.value = "";
+      state.url = "";
+      state.body = "";
+      state.headers = [];
+      renderHeaders();
+    } else if (state.activeFolder === folderIndex && state.activeRequest > requestIndex) {
+      // Adjust active request index if needed
+      state.activeRequest--;
+    }
+    
+    // Save and update UI
+    saveFolders();
+    renderFolders();
+  }
+}
+
+        // Save current request to a folder (kept for modal compatibility)
+        function saveRequest() {
+          const requestName = elements.requestNameInput.value.trim();
+          const folderIndex = parseInt(elements.folderSelect.value);
+
+          if (!requestName) {
+            // Generate a name instead of showing an alert
+            elements.requestNameInput.value = generateRequestName();
+            return saveRequest(); // Retry with generated name
+          }
+
+          if (
+            isNaN(folderIndex) ||
+            folderIndex < 0 ||
+            folderIndex >= state.folders.length
+          ) {
+            // Use first folder instead of showing an alert
+            const firstFolderIndex = 0;
+            elements.folderSelect.value = firstFolderIndex;
+            return saveRequest(); // Retry with first folder
+          }
+
+          const newRequest = {
+            id: state.currentRequestId || Date.now(),
+            name: requestName,
+            method: state.method,
+            url: state.url,
+            headers: [...state.headers],
+            body: state.body,
+          };
+
+          // If editing an existing request
+          if (
+            state.currentRequestId &&
+            state.activeFolder === folderIndex &&
+            state.activeRequest !== null
+          ) {
+            state.folders[folderIndex].requests[state.activeRequest] =
+              newRequest;
+          } else {
+            // Add as a new request
+            state.folders[folderIndex].requests.push(newRequest);
+            state.activeRequest =
+              state.folders[folderIndex].requests.length - 1;
+          }
+
+          state.activeFolder = folderIndex;
+          state.currentRequestId = newRequest.id;
+
+          saveFolders();
+          renderFolders();
+          hideSaveRequestModal();
+        }
+
+        // Event Listeners
+        function setupEventListeners() {
+          // Method dropdown
+          elements.methodButton.addEventListener("click", toggleDropdown);
+          document.addEventListener("click", closeDropdownOnClickOutside);
+
+          // Method options
+          document.querySelectorAll(".dropdown-option").forEach((option) => {
+            option.addEventListener("click", (e) => {
+              selectMethod(e.target.getAttribute("data-value"));
+            });
+          });
+
+          // Keyboard navigation for dropdown
+          elements.methodButton.addEventListener("keydown", handleDropdownKeyboard);
+
+
+          // Original event listeners
+          elements.urlInput.addEventListener("input", onUrlChange);
+          elements.jsonButton.addEventListener("click", () =>
+            applyPreset("json"),
+          );
+          elements.authButton.addEventListener("click", () =>
+            applyPreset("auth"),
+          );
+          elements.addHeaderButton.addEventListener("click", addHeader);
+          elements.bodyTextarea.addEventListener("input", onBodyChange);
+          elements.sendButton.addEventListener("click", sendRequest);
+
+          // View more button
+          elements.viewMoreButton.addEventListener("click", loadMoreResponse);
+
+          // Folder management
+          elements.createFolderButton.addEventListener("click", showCreateFolderModal);
+          elements.cancelFolderButton.addEventListener("click", hideCreateFolderModal);
+          elements.confirmFolderButton.addEventListener("click", createFolder);
+
+          // Request management
+          elements.saveRequestButton.addEventListener("click", () => {
+            if (state.currentRequestId) {
+              saveRequestDirectly();
+            } else {
+              showSaveRequestModal(true);
+            }
+            }
+          );
+          elements.cancelRequestButton.addEventListener(
+            "click",
+            hideSaveRequestModal,
+          );
+          elements.confirmRequestButton.addEventListener("click", saveRequest);
+
+          // Mobile sidebar toggle
+          if (elements.toggleSidebarButton) {
+            elements.toggleSidebarButton.addEventListener(
+              "click",
+              toggleSidebar,
+            );
+          }
+          elements.cancelRequestButton.addEventListener("click", hideSaveRequestModal);
+          elements.confirmRequestButton.addEventListener("click", saveRequest);
+
+
+          // Window resize event for responsive behavior
+          window.addEventListener("resize", checkMobile);
+        }
+
+        // Dropdown Functions
+        function toggleDropdown(e) {
+          e.preventDefault();
+          state.dropdownOpen = !state.dropdownOpen;
+          updateDropdownUI();
+        }
+
+        function closeDropdownOnClickOutside(e) {
+          if (
+            state.dropdownOpen &&
+            !elements.methodDropdown.contains(e.target)
+          ) {
+            state.dropdownOpen = false;
+            updateDropdownUI();
+          }
+        }
+
+        function updateDropdownUI() {
+          if (state.dropdownOpen) {
+            elements.dropdownOptions.classList.add("open");
+            elements.dropdownArrow.classList.add("open");
+          } else {
+            elements.dropdownOptions.classList.remove("open");
+            elements.dropdownArrow.classList.remove("open");
+          }
+        }
+
+        function selectMethod(method) {
+          state.method = method;
+          elements.selectedMethod.textContent = method;
+          elements.methodSelect.value = method;
+
+          // Update selected option styling
+          document.querySelectorAll(".dropdown-option").forEach((option) => {
+            if (option.getAttribute("data-value") === method) {
+              option.classList.add("selected");
+            } else {
+              option.classList.remove("selected");
+            }
+          });
+
+          // Close dropdown
+          state.dropdownOpen = false;
+          updateDropdownUI();
+        }
+
+        function handleDropdownKeyboard(e) {
+          const options = Array.from(
+            document.querySelectorAll(".dropdown-option"),
+          );
+          const currentIndex = options.findIndex(
+            (opt) => opt.getAttribute("data-value") === state.method,
+          );
+
+          switch (e.key) {
+            case "Enter":
+            case " ":
+              e.preventDefault();
+              toggleDropdown(e);
+              break;
+            case "Escape":
+              if (state.dropdownOpen) {
+                e.preventDefault();
+                state.dropdownOpen = false;
+                updateDropdownUI();
+              }
+              break;
+            case "ArrowDown":
+              if (state.dropdownOpen) {
+                e.preventDefault();
+                const nextIndex = (currentIndex + 1) % options.length;
+                selectMethod(options[nextIndex].getAttribute("data-value"));
+              } else {
+                toggleDropdown(e);
+              }
+              break;
+            case "ArrowUp":
+              if (state.dropdownOpen) {
+                e.preventDefault();
+                const prevIndex =
+                  (currentIndex - 1 + options.length) % options.length;
+                selectMethod(options[prevIndex].getAttribute("data-value"));
+              } else {
+                toggleDropdown(e);
+              }
+              break;
+          }
+        }
+
+        // Event Handlers
+        function onUrlChange(event) {
+          state.url = event.target.value;
+        }
+
+        function onBodyChange(event) {
+          state.body = event.target.value;
+        }
+
+        function onHeaderCheckboxChange(event, index) {
+          state.headers[index].enabled = event.target.checked;
+        }
+
+        function onHeaderKeyChange(event, index) {
+          state.headers[index].key = event.target.value;
+        }
+
+        function onHeaderValueChange(event, index) {
+          state.headers[index].value = event.target.value;
+        }
+
+        // Header Management
+        function addHeader() {
+          state.headers.push({
+            key: "",
+            value: "",
+            enabled: true,
+          });
+          renderHeaders();
+        }
+
+        function removeHeader(index) {
+          state.headers.splice(index, 1);
+          renderHeaders();
+        }
+
+        function applyPreset(preset) {
+          const presetHeaders = Object.entries(state.headerPresets[preset]).map(
+            ([key, value]) => ({
+              key,
+              value,
+              enabled: true,
+            }),
+          );
+          state.headers = [...state.headers, ...presetHeaders];
+          renderHeaders();
+        }
+
+        function renderHeaders() {
+          elements.headerItems.innerHTML = "";
+
+          state.headers.forEach((header, index) => {
+            const headerItem =
+              elements.headerItemTemplate.content.cloneNode(true);
+
+            const checkbox = headerItem.querySelector(".header-checkbox");
+            const keyInput = headerItem.querySelector(".header-name-input");
+            const valueInput = headerItem.querySelector(".header-value-input");
+            const removeButton = headerItem.querySelector(
+              ".remove-header-button",
+            );
+
+            checkbox.checked = header.enabled;
+            keyInput.value = header.key;
+            valueInput.value = header.value;
+
+            checkbox.addEventListener("change", (e) =>
+              onHeaderCheckboxChange(e, index),
+            );
+            keyInput.addEventListener("input", (e) =>
+              onHeaderKeyChange(e, index),
+            );
+            valueInput.addEventListener("input", (e) =>
+              onHeaderValueChange(e, index),
+            );
+            removeButton.addEventListener("click", () => removeHeader(index));
+
+            elements.headerItems.appendChild(headerItem);
+          });
+        }
+
+        // Response handling with truncation
+        function updateResponseDisplay() {
+          if (state.response) {
+            // Store the full response
+            state.fullResponse =
+              typeof state.response === "object"
+                ? JSON.stringify(state.response, null, 2)
+                : state.response;
+
+            // Reset chunk counter
+            state.currentChunk = 1;
+
+            // Display the first chunk
+            displayResponseChunk();
+
+            elements.responseContent.classList.remove("hidden");
+            elements.noResponse.classList.add("hidden");
+          } else {
+            elements.responseContent.classList.add("hidden");
+            elements.noResponse.classList.remove("hidden");
+            elements.viewMoreContainer.classList.add("hidden");
+          }
+        }
+
+        function displayResponseChunk() {
+          const fullText = state.fullResponse;
+          const chunkSize = state.responseChunkSize;
+          const totalChunks = Math.ceil(fullText.length / chunkSize);
+          const endIndex = state.currentChunk * chunkSize;
+
+          // Display current chunk
+          elements.responseContent.textContent = fullText.substring(
+            0,
+            endIndex,
+          );
+
+          // Show/hide view more button
+          if (state.currentChunk < totalChunks) {
+            elements.viewMoreContainer.classList.remove("hidden");
+            elements.viewMoreButton.textContent = `View more (${state.currentChunk}/${totalChunks})`;
+            elements.viewMoreButton.classList.remove("expanded");
+          } else {
+            // If we're showing the last chunk, change button to "View less"
+            if (totalChunks > 1) {
+              elements.viewMoreContainer.classList.remove("hidden");
+              elements.viewMoreButton.textContent = "View less";
+              elements.viewMoreButton.classList.add("expanded");
+            } else {
+              elements.viewMoreContainer.classList.add("hidden");
+            }
+          }
+        }
+
+        function loadMoreResponse() {
+          if (elements.viewMoreButton.classList.contains("expanded")) {
+            // Reset to first chunk if "View less" was clicked
+            state.currentChunk = 1;
+          } else {
+            // Increment chunk counter
+            state.currentChunk++;
+          }
+
+          // Update display
+          displayResponseChunk();
+
+          // Scroll to the view more button
+          elements.viewMoreContainer.scrollIntoView({ behavior: "smooth" });
+        }
+
+        // Request Handling
+        async function sendRequest(e) {
+          e.preventDefault();
+
+          if (!state.url) {
+            alert("Please enter a URL");
+            return;
+          }
+
+          setLoading(true);
+
+          try {
+            // Build headers object from enabled headers
+            const headers = new Headers();
+            state.headers.forEach((header) => {
+              if (header.enabled && header.key) {
+                headers.append(header.key, header.value);
+              }
+            });
+
+            // Configure request options
+            const options = {
+              method: state.method,
+              headers: headers,
+            };
+
+            // Add body for non-GET requests
+            if (state.method !== "GET" && state.body) {
+              options.body = state.body;
+            }
+
+            // Send the request
+            const response = await fetch(state.url, options);
+
+            // Try to parse as JSON first
+            try {
+              state.response = await response.json();
+            } catch (e) {
+              // If not JSON, get as text
+              state.response = await response.text();
+            }
+
+            // Update UI
+            updateResponseDisplay();
+          } catch (error) {
+            state.response = { error: error.message };
+            updateResponseDisplay();
+          } finally {
+            setLoading(false);
+          }
+        }
+
+        function setLoading(isLoading) {
+          state.isLoading = isLoading;
+          elements.sendButton.disabled = isLoading;
+
+          if (isLoading) {
+            elements.sendButton.querySelector(".text").textContent =
+              "Sending...";
+          } else {
+            elements.sendButton.querySelector(".text").textContent =
+              "Send request";
+          }
+        }
+
+        // Initialize
+        function init() {
+          setupEventListeners();
+          loadFolders();
+          renderHeaders();
+          checkMobile();
+        }
+
+        // Start the application
+        document.addEventListener("DOMContentLoaded", init);
+      })();
+
+      function clearAllData() {
+  localStorage.removeItem("requestFolders");
+  state.folders = [];
+  state.activeFolder = null;
+  state.activeRequest = null;
+  state.currentRequestId = null;
+  renderFolders();
+}
+    </script>
+  </body>
+</html>

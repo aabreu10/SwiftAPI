@@ -24,7 +24,6 @@ function InputDesign() {
     const newHeaderEntries = [...headerEntries];
     newHeaderEntries[index][field] = value;
 
-    // Update the headers object and check for duplicates
     const newHeaders = {};
     const keys = new Set();
     let hasDuplicates = false;
@@ -58,7 +57,6 @@ function InputDesign() {
       const newHeaderEntries = headerEntries.filter((_, i) => i !== index);
       setHeaderEntries(newHeaderEntries);
 
-      // Update the headers object
       const newHeaders = {};
       newHeaderEntries.forEach((entry) => {
         if (entry.key.trim() !== "") {
@@ -70,7 +68,6 @@ function InputDesign() {
     }
   };
 
-  // Validate URL when it changes
   useEffect(() => {
     if (!url) {
       setErrors(prev => ({ ...prev, url: "" }));
@@ -86,7 +83,6 @@ function InputDesign() {
   }, [url]);
 
   // Validate JSON body when applicable
-  useEffect(() => {
     if (method === "GET" || !body.trim()) {
       setErrors(prev => ({ ...prev, body: "" }));
       return;
@@ -103,7 +99,6 @@ function InputDesign() {
   async function sendRequest() {
     // Validate before sending
     if (errors.url || errors.headers || errors.body) {
-      return;
     }
 
     if (!url.trim()) {

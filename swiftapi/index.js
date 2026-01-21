@@ -9,10 +9,10 @@ function createWindow() {
     minWidth: 800,
     minHeight: 600,
     title: "SwiftAPI", 
-    icon: path.join(__dirname, 'assets', 'swiftapilogo.png'), // See below for icon
+    icon: path.join(__dirname, 'assets', 'swiftapilogo.png'),
     backgroundColor: '#1e1e1e', 
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'), // Use preload script for security
+      preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
       contextIsolation: false, 
     },
@@ -22,14 +22,11 @@ function createWindow() {
   return win;
 }
 
-// When the app is ready, create window and check for updates
 app.whenReady().then(() => {
   const mainWindow = createWindow();
   
-  // Check for updates
   autoUpdater.checkForUpdatesAndNotify();
   
-  // Update event handlers
   autoUpdater.on('update-available', () => {
     dialog.showMessageBox({
       type: 'info',
